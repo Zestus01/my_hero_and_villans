@@ -1,4 +1,5 @@
 from pyton.connection import execute_query
+import random
 
 def select_all():
     query = """
@@ -6,7 +7,7 @@ def select_all():
     """
     list_of_heros = execute_query(query).fetchall()
     for record in list_of_heros:
-        print(record[1])   
+        print(record[1] + ': ' + record[5])   
 
 def get_hero_relationship(hero1ID, hero2ID):
     intial_query = """
@@ -21,6 +22,30 @@ def get_hero_relationship(hero1ID, hero2ID):
 
     print(execute_query(second_query,(type_id,)).fetchone()[0])    
 
-select_all()
+def print_heros_with_powers():
+    query = """ SELECT heroes.name, ability_types.name FROM heroes
+            JOIN abilities ON heroes.id = abilities.hero_id
+            JOIN ability_types on ability_types.id = abilities.ability_type_id
+            """
+    heros_with_powers = execute_query(query).fetchall()
+    for record in heros_with_powers:
+        print('')
+        print(record[0] + ': ' + record[1])
+    print('')    
+
+def form_groups():
+    intial_query = """ALTER TABLE heroes ADD Organization "text";"""
+    execute_query(intial_query)
+    organizations = ["The Cure", "Goody-two-shoes", "Tragic Backstories", "Synaptek"]
+    count_query = """ SELECT COUNT(id) FROM heroes"""
+    count_heroes = execute_query(count_query).fetchone()[0]
+    update_query = """UPDATE heroes SET Organization = %s WHERE id = %s;"""
+    for index in range(1, (count_heroes + 1)):
+        execute_query(update_query,(random.choice(organizations),index,))
+    select_all()
+
+form_groups()
+
+print_heros_with_powers()
 
 get_hero_relationship(5, 3)
