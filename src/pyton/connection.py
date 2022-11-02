@@ -29,13 +29,5 @@ def execute_query(query, params=None):
     except OSError as e:
         print(f"The error '{e}' occurred or the hero name is already taken")
 
-def select_all():
-    query = """
-        SELECT * FROM heros
-    """
-    list_of_heros = execute_query()
-    for record in list_of_heros:
-        print(record)
-
 
 
