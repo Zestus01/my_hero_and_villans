@@ -1,7 +1,7 @@
 from pyton.connection import execute_query
 from read import *
 import random
-import os
+
 def form_groups():
     intial_query = """ALTER TABLE heroes ADD COLUMN IF NOT EXISTS patrol_group "text" """
     execute_query(intial_query)

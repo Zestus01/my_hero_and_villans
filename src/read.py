@@ -46,5 +46,5 @@ def print_heros_with_powers(with_space = True):
     for record in heros_with_powers:
         if(with_space):
             print('')
-        print('ID:' + str(record[0]) +' ' + record[1] + ' with the abilities ' + record[2] + ' Their strength level is :' + str(record[3]) + '. Patrolling with the ' + record[4])  
+        print('ID:' + str(record[0]) +' ' + record[1] + ' with the abilities ' + record[2] + ' Their strength level is : ' + str(record[3]) + '. Patrolling with the ' + record[4])  
     print(' ')

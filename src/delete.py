@@ -64,7 +64,9 @@ def hero_death(heroes):
     delete_ability_query = """DELETE FROM abilities where id = %s;"""
     delete_ability_types_query = """DELETE FROM ability_types where id = %s;"""
     delete_relationship_query = """DELETE FROM relationships where hero1_id = %s OR hero2_id = %s;"""
+    name_query = """SELECT name from heroes where id = %s"""
     for index in heroes:
+        print(execute_query(name_query,(index,)))
         hero_id_query = """SELECT id FROM heroes WHERE id = %s;"""
         hero_id = execute_query(hero_id_query,(index,)).fetchone()[0]
         execute_query(delete_hero_query,(hero_id,))
