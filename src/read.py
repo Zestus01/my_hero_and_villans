@@ -1,9 +1,6 @@
 from pyton.connection import execute_query
 import random
 
-
-
-
 def select_all():
     query = """
         SELECT * FROM heroes

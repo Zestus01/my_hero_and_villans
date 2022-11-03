@@ -44,4 +44,25 @@ SELECT heroes.name, ability_types.name, heroes.patrol_group  FROM heroes
             JOIN ability_types on ability_types.id = abilities.ability_type_id; 
 
 
-INSERT INTO ability_types 
+INSERT INTO ability_types (name) VALUES ('Size manipulation'), ('Power siphoning'), ('Shapeshifting'), ('Edit Source-Code'), ('Allomancy'), ('Billionaire');
+
+INSERT INTO heroes (name, about_me, biography) VALUES ('Kelsier', 'A man with conviction who fights for the good of the common people. Sacrifices himself to save others', 'Kelsier is the main male character in the first book of the Mistborn trilogy, and he is the leader of the rebel crew and Vins mentor. Most commonly known among the skaa as the Survivor, Kelsier is a wily Mistborn who plans to topple Lord Ruler. Kelsier becomes the new God figure that replaces Lord Ruler starting the Church of the Survivor revered by the Skaa, 
+he is now known as a religious figure, the religion is called Survivorism');
+
+select id from heroes where name = 'Kelsier';
+
+select Max(id) from heroes;
+
+UPDATE heroes SET patrol_group = 'Test 5' WHERE id = 7;
+
+SELECT id from ability_types WHERE name = 'Allomancy';
+
+INSERT INTO hereos (name, about_me, biography) VALUES ('Vin', 'A street urchin who defeats a god, then becomes one herself', 'Street Urchin');
+INSERT INTO abilities(hero_id, ability_type_id) SELECT id.heroes, ability_types.id FROM heroes s1 INNER JOIN ability_types s2 ON s1.id = s2.id;
+DELETE FROM heroes WHERE name = 'Kelsier';
+DELETE FROM ability_types WHERE name = 'Billionaire';
+DELETE FROM ability_types WHERE name = 'Allomancy';
+DELETE FROM ability_types WHERE name = 'Edit Source-Code';
+DELETE FROM ability_types WHERE name = 'Power siphoning';
+DELETE FROM ability_types WHERE name = 'Size manipulation' ;
+DELETE FROM ability_types WHERE name = 'Shapeshifting';
