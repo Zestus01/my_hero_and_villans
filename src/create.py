@@ -42,22 +42,17 @@ def connect_abilities(hero_name, hero_ability):
     hero_id_query = """ SELECT id FROM heroes WHERE LOWER(name) = %s;"""
     hero_id = execute_query(hero_id_query,(hero_name.lower(),)).fetchone()[0]
     ability_id_query = """SELECT id from ability_types WHERE LOWER(name) = %s;"""
-    ability_id = execute_query(ability_id_query,(abilities.lower(),)).fetchone()[0]
+    ability_id = execute_query(ability_id_query,(hero_ability.lower(),)).fetchone()[0]
     insert_query = """INSERT INTO abilities(hero_id, ability_type_id) VALUES (%s, %s);"""
     execute_query(insert_query,(hero_id, ability_id))
 
 def copy_tables():
-    check_query = """SELECT count(*)
-    FROM   pg_attribute a
-    WHERE  attrelid = 'heroes'::regclass
-    and attname = 'heroes_backup'"""
-    check_num = execute_query(check_query).fetchone()[0]
-    if(check_num == 0):
-        copy_hero_query = """SELECT * INTO heroes_backup FROM heroes"""
-        copy_ability_query = """SELECT * INTO abilities_backup FROM abilities"""
-        copy_ability_types_query = """SELECT * INTO ability_type_backup FROM ability_types"""
-        copy_relationship_query = """SELECT * INTO relationships_backup FROM relationships"""
-        copy_relationship_types_query = """SELECT * INTO relationship_type_backup FROM relationship_types"""
-        query_array = [copy_hero_query, copy_ability_query, copy_ability_types_query, copy_relationship_query, copy_relationship_types_query]
-        for query in query_array:
-            execute_query(query)
+    copy_hero_query = """IF TABLE NOT EXISTS SELECT * INTO heroes_backup FROM heroes"""
+    copy_ability_query = """IF TABLE NOT EXISTS SELECT * INTO abilities_backup FROM abilities"""
+    copy_ability_types_query = """IF TABLE NOT EXISTS SELECT * INTO ability_type_backup FROM ability_types"""
+    copy_relationship_query = """IF TABLE NOT EXISTS SELECT * INTO relationships_backup FROM relationships"""
+    copy_relationship_types_query = """IF TABLE NOT EXISTS SELECT * INTO relationship_type_backup FROM relationship_types"""
+    query_array = [copy_hero_query, copy_ability_query, copy_ability_types_query, copy_relationship_query, copy_relationship_types_query]
+    for query in query_array:
+        execute_query(query)
+

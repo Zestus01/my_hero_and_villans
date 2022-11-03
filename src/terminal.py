@@ -14,7 +14,8 @@ def terminal_load():
     print("5] Query hero relationship")
     print('6] Create Patrol groups')
     print('7] Disband Patrol groups')
-    print("8] Close the console....")
+    print('8] Reassess power rankings of heroes')
+    print("9] Close the console....")
     x = input("Awaiting your command: ")
     if(x == "1"):
         print_heros_with_powers()
@@ -31,6 +32,8 @@ def terminal_load():
     elif(x == '7'):
         sign_sokovia_accords()
     elif(x == '8'):
+        power_ranking()
+    elif(x == '9'):
         print('Goodbye commander')
         return
     else:

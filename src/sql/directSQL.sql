@@ -5,9 +5,11 @@ SELECT * FROM heroes;
 
 ALTER TABLE heroes ADD patrol_group "text";
 
+INSERT (hero1_id, hero2_id, relationship_type_id)
+
 ALTER TABLE heroes DROP COLUMN patrol_group;
 CREATE TABLE IF NOT EXISTS heroes_backup();
-SELECT  * INTO heroes_backup FROM heroes;
+IF TABLE EXISTS SELECT  * INTO heroes_backup FROM heroes;
 
 DROP TABLE IF EXISTS heroes_backup;
 
