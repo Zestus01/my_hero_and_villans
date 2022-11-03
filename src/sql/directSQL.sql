@@ -6,6 +6,23 @@ SELECT * FROM heroes;
 ALTER TABLE heroes ADD patrol_group "text";
 
 ALTER TABLE heroes DROP COLUMN patrol_group;
+CREATE TABLE IF NOT EXISTS heroes_backup();
+SELECT  * INTO heroes_backup FROM heroes;
+
+DROP TABLE IF EXISTS heroes_backup;
+
+SELECT power_ranking from heroes WHERE id = 2;
+
+ALTER TABLE heroes ADD COLUMN IF NOT EXISTS power_ranking INT;
+
+DROP TABLE heroes_backup;
+
+SELECT * INTO heroes_backup FROM heroes;
+
+SELECT heroes.id, heroes.name, string_agg(ability_types.name, ', '), heroes.patrol_group FROM heroes
+            JOIN abilities ON heroes.id = abilities.hero_id
+            JOIN ability_types on ability_types.id = abilities.ability_type_id 
+            GROUP BY heroes.id;
 
 UPDATE heroes SET patrol_group = 'League of Villans' WHERE id = 1;
 
@@ -29,16 +46,24 @@ Select id from heroes where LOWER(heroes.name) = 'Chill woman';
 SELECT relationship_type_id from relationships WHERE hero1_id = 1 and hero2_id = 3;
 
 
+SELECT *
+    FROM   pg_attribute a
+    WHERE  attrelid = 'heroes'::regclass
+    and attname = 'heroes_backup';
+
 ALTER TABLE IF 
     SELECT COUNT(*)
     FROM   pg_attribute a
     WHERE  attrelid = 'heroes'::regclass  --  tbl here
     AND attname = 'patrol_group' = 0 heroes ADD patrol_group "text";
 
+SELECT *
+    FROM   pg_attribute a
+    WHERE  attrelid = 'heroes'::regclass
+
 ALTER TABLE heroes ADD COLUMN IF NOT EXISTS patrol_group "text";
 
 select name, patrol_group from heroes ORDER BY patrol_group;
-
 SELECT heroes.name, ability_types.name, heroes.patrol_group  FROM heroes
             JOIN abilities ON heroes.id = abilities.hero_id
             JOIN ability_types on ability_types.id = abilities.ability_type_id; 

@@ -3,7 +3,6 @@ from read import *
 import random
 
 def form_groups():
-    # check_query
     intial_query = """ALTER TABLE heroes ADD COLUMN IF NOT EXISTS patrol_group "text" """
     execute_query(intial_query)
     patrol_groups = ["Cure", "Dasterdly Do-Gooders", "Tragic Backstories", "Zuper Zealots", "Survivors"]
@@ -17,7 +16,8 @@ def form_groups():
 def acquire_rights_a_franchise():
     print("Which franchise did you purchase?")
     franchise = input('1] The Boys, or 2] Marvel')
-    insert_query = """ """
+    if(franchise == '1'):
+        franchise_insert_query = """ """
 
 def hire_heroes():
     print('Great, always looking for fresh heroes. Are they from an existing group or new hire?')
@@ -29,14 +29,35 @@ def hire_heroes():
 
 def enter_new_recruit():
     hero_name = input("Hero name: ")
-    abilities = input("What are their abilities: ")
+    hero_ability = input("What are their abilities: ")
     bio = input("What is their backstory? ")
+    about_them = input('What is their personality? ')
+    insert_hero_query = """INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s);"""
+    insert_ability_query = """INSERT INTO ability_types (name) VALUES (%s)"""
+    execute_query(insert_hero_query, (hero_name, about_them, bio,))
+    execute_query(insert_ability_query,(hero_ability,))
+    connect_abilities(hero_name, hero_ability)
 
-def connect_abilities(abilities):
-    hero_id_query = """ SELECT id FROM heroes WHERE name = %s;"""
-    hero_id = execute_query(hero_id_query,('Kelsier',)).fetchone()[0]
+def connect_abilities(hero_name, hero_ability):
+    hero_id_query = """ SELECT id FROM heroes WHERE LOWER(name) = %s;"""
+    hero_id = execute_query(hero_id_query,(hero_name.lower(),)).fetchone()[0]
     ability_id_query = """SELECT id from ability_types WHERE LOWER(name) = %s;"""
-    ability_id = execute_query(ability_id_query,('Allomancy'.lower(),)).fetchone()[0]
+    ability_id = execute_query(ability_id_query,(abilities.lower(),)).fetchone()[0]
     insert_query = """INSERT INTO abilities(hero_id, ability_type_id) VALUES (%s, %s);"""
     execute_query(insert_query,(hero_id, ability_id))
-# connect_abilities()
+
+def copy_tables():
+    check_query = """SELECT count(*)
+    FROM   pg_attribute a
+    WHERE  attrelid = 'heroes'::regclass
+    and attname = 'heroes_backup'"""
+    check_num = execute_query(check_query).fetchone()[0]
+    if(check_num == 0):
+        copy_hero_query = """SELECT * INTO heroes_backup FROM heroes"""
+        copy_ability_query = """SELECT * INTO abilities_backup FROM abilities"""
+        copy_ability_types_query = """SELECT * INTO ability_type_backup FROM ability_types"""
+        copy_relationship_query = """SELECT * INTO relationships_backup FROM relationships"""
+        copy_relationship_types_query = """SELECT * INTO relationship_type_backup FROM relationship_types"""
+        query_array = [copy_hero_query, copy_ability_query, copy_ability_types_query, copy_relationship_query, copy_relationship_types_query]
+        for query in query_array:
+            execute_query(query)

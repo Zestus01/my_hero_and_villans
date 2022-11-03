@@ -33,16 +33,16 @@ def get_hero_relationship():
     type_id = type_id[1]
     second_query = """
         SELECT name from relationship_types where ID = %s"""
-
     print('They are ' + execute_query(second_query,(type_id,)).fetchone()[0])    
 
-def print_heros_with_powers():
-    query = """ SELECT heroes.name, ability_types.name, heroes.patrol_group FROM heroes
+def print_heros_with_powers(with_space = True):
+    query = """ SELECT heroes.id, heroes.name, string_agg(ability_types.name, ', '), heroes.power_ranking, heroes.patrol_group FROM heroes
             JOIN abilities ON heroes.id = abilities.hero_id
-            JOIN ability_types on ability_types.id = abilities.ability_type_id
+            JOIN ability_types on ability_types.id = abilities.ability_type_id 
+            GROUP BY heroes.id;
             """
     heros_with_powers = execute_query(query).fetchall()
     for record in heros_with_powers:
-        print('')
-        print(record[0] + ' with the abilities ' + record[1] + '. Patrolling with the ' + record[2])
-    print('')    
+        if(with_space):
+            print('')
+        print('ID:' + str(record[0]) +' ' + record[1] + ' with the abilities ' + record[2] + ' Their strength level is:' + str(record[3]) + '. Patrolling with the ' + record[4])  
