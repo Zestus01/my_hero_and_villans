@@ -1,7 +1,7 @@
 from pyton.connection import execute_query
 from read import *
 import random
-
+import os
 def form_groups():
     intial_query = """ALTER TABLE heroes ADD COLUMN IF NOT EXISTS patrol_group "text" """
     execute_query(intial_query)
@@ -32,6 +32,10 @@ def enter_new_recruit():
     hero_ability = input("What are their abilities: ")
     bio = input("What is their backstory? ")
     about_them = input('What is their personality? ')
+    recruit_hero(hero_name, about_them, bio, hero_ability)
+    
+
+def recruit_hero(hero_name, about_them, bio, hero_ability):    
     insert_hero_query = """INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s);"""
     insert_ability_query = """INSERT INTO ability_types (name) VALUES (%s)"""
     execute_query(insert_hero_query, (hero_name, about_them, bio,))
@@ -47,12 +51,15 @@ def connect_abilities(hero_name, hero_ability):
     execute_query(insert_query,(hero_id, ability_id))
 
 def copy_tables():
-    copy_hero_query = """IF TABLE NOT EXISTS SELECT * INTO heroes_backup FROM heroes"""
-    copy_ability_query = """IF TABLE NOT EXISTS SELECT * INTO abilities_backup FROM abilities"""
-    copy_ability_types_query = """IF TABLE NOT EXISTS SELECT * INTO ability_type_backup FROM ability_types"""
-    copy_relationship_query = """IF TABLE NOT EXISTS SELECT * INTO relationships_backup FROM relationships"""
-    copy_relationship_types_query = """IF TABLE NOT EXISTS SELECT * INTO relationship_type_backup FROM relationship_types"""
-    query_array = [copy_hero_query, copy_ability_query, copy_ability_types_query, copy_relationship_query, copy_relationship_types_query]
-    for query in query_array:
-        execute_query(query)
-
+    check_query = """SELECT * FROM information_schema.tables 
+                WHERE Table_type = 'BASE TABLE'
+                and TABLE_NAME = 'heroes_backup';"""
+    if(execute_query(check_query).fetchone()[0] != 'postgres'):
+        copy_hero_query = """SELECT * INTO heroes_backup FROM heroes"""
+        copy_ability_query = """SELECT * INTO abilities_backup FROM abilities"""
+        copy_ability_types_query = """SELECT * INTO ability_type_backup FROM ability_types"""
+        copy_relationship_query = """SELECT * INTO relationships_backup FROM relationships"""
+        copy_relationship_types_query = """SELECT * INTO relationship_type_backup FROM relationship_types"""
+        query_array = [copy_hero_query, copy_ability_query, copy_ability_types_query, copy_relationship_query, copy_relationship_types_query]
+        for query in query_array:
+            execute_query(query)
