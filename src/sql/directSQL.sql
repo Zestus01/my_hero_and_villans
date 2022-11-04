@@ -5,17 +5,35 @@ SELECT * FROM heroes;
 
 SELECT relationship_type_id from relationshipstsasd WHERE hero1_id = 2 and hero2_id = 113;
 
-INSERT INTO abilities (hero_id, ability_type_id) VALUES (15, 5);
+INSERT INTO abilities (hero_id, ability_type_id) VALUES (17, 5);
 INSERT INTO heroes(name, about_me, biography) VALUES ('Chill Woman', 'Chill', 'Test');
 ALTER TABLE heroes ADD patrol_group "text";
 
 INSERT (hero1_id, hero2_id, relationship_type_id);
 
+IF COL_LENGTH('heroes', 'patrol_group') IS NOT NULL
+    PRINT 'Column EXISITS'
+ELSE
+    PRINT 'Colum'
+    ;
+SELECT * from heroes WHERE id = 2;    
+SELECT COUNT(*) from abilities WHERE hero_id = 17 and ability_type_id = 5;
+INSERT INTO abilities(hero_id, ability_type_id) VALUES (17, 5) ON CONFLICT DO NOTHING;
+INSERT INTO heroes (name, about_me, biography, patrol_group, power_ranking) VALUES ('Chill Woman', 'Chill', 'Test', 'Newbs', 1) ON CONFLICT DO NOTHING; 
+SELECT *  
+FROM information_schema.COLUMNS   
+AND TABLE_NAME = 'heroes'  
+AND COLUMN_NAME = 'patrol_group';
 
+SELECT id from ability_types WHERE name = 'Zombie';
+SELECT COUNT(*) FROM ability_types WHERE name = 'Zombie';
+INSERT INTO ability_types(name) VALUES ('Zombie');
+
+INSERT INTO relationships (hero1_id, hero2_id, relationship_type_id) VALUES (2, 8, 1);
 SELECT *
 FROM information_schema.tables
 WHERE Table_type = 'BASE TABLE'
-and TABLE_NAME = 'heroes_backup';
+and TABLE_NAME = 'heroes';
 WHERE name = 'Artists';
 INSERT INTO heroes (name, about_me, biography) VALUES ('Saitama', 'One-punch guy', 'ONE PUNCH MAN');
 SELECT ID FROM heroes WHERE id = 5;

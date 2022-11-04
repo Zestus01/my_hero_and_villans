@@ -34,6 +34,9 @@ def terminal_load():
         sign_sokovia_accords()
     elif(x == '8'):
         power_ranking()
+    elif(x == '9'):
+        lazarus_project()
+        delete_backups()
     elif(x == '10'):
         print('Goodbye commander')
         return

@@ -21,7 +21,7 @@ def acquire_rights_a_franchise():
 
 def hire_heroes():
     print('Great, always looking for fresh heroes. Are they from an existing group or new hire?')
-    x = input("1 for group, 2 for new hire: ")
+    x = input("Only have new hire paperwork, 2 for new hire: ")
     if(x == '1'):
         acquire_rights_a_franchise()
     elif(x == '2'):
@@ -36,7 +36,7 @@ def enter_new_recruit():
     
 
 def recruit_hero(hero_name, about_them, bio, hero_ability):    
-    insert_hero_query = """INSERT INTO heroes (name, about_me, biography) VALUES (%s, %s, %s);"""
+    insert_hero_query = """INSERT INTO heroes (name, about_me, biography, power_ranking, patrol_group) VALUES (%s, %s, %s, 1, 'Newbies');"""
     insert_ability_query = """INSERT INTO ability_types (name) VALUES (%s)"""
     execute_query(insert_hero_query, (hero_name, about_them, bio,))
     execute_query(insert_ability_query,(hero_ability,))
@@ -45,8 +45,12 @@ def recruit_hero(hero_name, about_them, bio, hero_ability):
 def connect_abilities(hero_name, hero_ability):
     hero_id_query = """ SELECT id FROM heroes WHERE LOWER(name) = %s;"""
     hero_id = execute_query(hero_id_query,(hero_name.lower(),)).fetchone()[0]
-    ability_id_query = """SELECT id from ability_types WHERE LOWER(name) = %s;"""
-    ability_id = execute_query(ability_id_query,(hero_ability.lower(),)).fetchone()[0]
+    if(type(hero_ability) == int):
+        ability_id_query ="""SELECT id from ability_types WHERE id = %s;"""
+    else:    
+        ability_id_query = """SELECT id from ability_types WHERE LOWER(name) = %s;"""
+        hero_ability = hero_ability.lower()
+    ability_id = execute_query(ability_id_query,(hero_ability,)).fetchone()[0]
     insert_query = """INSERT INTO abilities(hero_id, ability_type_id) VALUES (%s, %s);"""
     execute_query(insert_query,(hero_id, ability_id))
 
@@ -57,9 +61,45 @@ def copy_tables():
     if(execute_query(check_query).fetchone()[0] != 'postgres'):
         copy_hero_query = """SELECT * INTO heroes_backup FROM heroes"""
         copy_ability_query = """SELECT * INTO abilities_backup FROM abilities"""
-        copy_ability_types_query = """SELECT * INTO ability_type_backup FROM ability_types"""
         copy_relationship_query = """SELECT * INTO relationships_backup FROM relationships"""
-        copy_relationship_types_query = """SELECT * INTO relationship_type_backup FROM relationship_types"""
-        query_array = [copy_hero_query, copy_ability_query, copy_ability_types_query, copy_relationship_query, copy_relationship_types_query]
+        query_array = [copy_hero_query, copy_ability_query, copy_relationship_query]
         for query in query_array:
             execute_query(query)
+
+def lazarus_project():
+    zombie_check_query = """SELECT COUNT(*) FROM ability_types WHERE name = 'Zombie';"""
+    zombie_check = execute_query(zombie_check_query).fetchone()[0]
+    if(zombie_check == 0):
+        zombie_insert_query = """INSERT INTO ability_types(name) VALUES ('Zombie');"""
+        execute_query(zombie_insert_query)
+    count_query = """SELECT MAX(id) FROM heroes_backup"""
+    count_heroes = execute_query(count_query).fetchone()[0]
+    insert_heroes_conflict_query = """INSERT INTO heroes (name, about_me, biography, patrol_group, power_ranking) VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;"""
+    ability_count_query = """SELECT COUNT(*) from abilities_backup WHERE hero_id = %s"""
+    relationship_count_query = """SELECT COUNT(*) from relationships_backup WHERE hero1_id = %s OR hero2_id = %s"""
+    hero_data_query = """SELECT * from heroes_backup WHERE id = %s;"""
+    hero_check_query = """Select COUNT(*) from heroes where LOWER(name) = %s"""
+    for index in range(1, (count_heroes + 1)):
+        hero_data = execute_query(hero_data_query, (index,)).fetchall()
+        if(hero_data):
+            hero_check = execute_query(hero_check_query,(hero_data[0][1].lower(),)).fetchone()[0]
+            if(hero_check == 0):
+                execute_query(insert_heroes_conflict_query,(hero_data[0][1], hero_data[0][2], hero_data[0][3], hero_data[0][5], hero_data[0][6]))
+                hero_id_query = """SELECT id FROM heroes WHERE LOWER(name) = %s;"""
+                hero_id = execute_query(hero_id_query,(hero_data[0][1].lower(),)).fetchone()[0]
+                ability_count = execute_query(ability_count_query, (hero_id,)).fetchone()[0]
+                ability_query = """SELECT * from abilities_backup WHERE hero_id = %s;"""
+                ability = execute_query(ability_query, (hero_id,)).fetchall()
+                for index2 in range(0, ability_count):
+                    connect_abilities(hero_data[0][1], ability[index2][2])
+                connect_abilities(hero_data[0][1], 'Zombie')    
+    
+
+def test_function():
+    query = hero_check_query = """Select COUNT(*) from heroes where LOWER(name) = %s"""
+    placeholder = execute_query(query, ('test man'.lower(),)).fetchone()[0]
+    if(placeholder == 0):
+        print('True')
+    else:
+        print('False')
+test_function()    
